@@ -1,9 +1,11 @@
 from ast import Call
 from re import L
+from typing import final
 from telegram.ext import Updater
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler, CallbackQueryHandler
 import logging
+import animalData
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -11,6 +13,13 @@ logging.basicConfig(
 
 class VolunteerBot:
     def __init__(self, token):
+        # Storing the data for easy access
+        self.data = {
+            "animals": animalData.animal_organisations,
+            "social": None,
+            "environment": None,
+        }
+
         # Object to store data
         self.userData = {
             "volType": None,
@@ -20,25 +29,25 @@ class VolunteerBot:
         updater = Updater(token=token, use_context=True)
         dispatcher = updater.dispatcher
 
-        self.LOCATION, self.VOLTYPE, self.DATA = range(3)
+        self.LOCATION, self.VOLTYPE = range(2)
 
+        # Creating the conversation handler that asks the user for a location.
         conversationVol = ConversationHandler(
-            entry_points=[CommandHandler('talking', self.startConvo)],
+            entry_points=[CommandHandler(
+                'talking', self.startConvo)],
             states={
                 self.VOLTYPE: [MessageHandler(
                     Filters.text & (~Filters.command), self.volType)],
                 self.LOCATION: [MessageHandler(
                     Filters.text & (~Filters.command), self.location)],
-                self.DATA: [MessageHandler(
-                    Filters.text & (~Filters.command), self.data)]
             },
-            fallbacks=[CommandHandler('start', self.start)]
+            fallbacks=[CommandHandler(
+                'start', self.start)]
         )
 
         # Creating the initial commands
         dispatcher.add_handler(CommandHandler('start', self.start))
         dispatcher.add_handler(conversationVol)
-        # dispatcher.add_handler(CommandHandler('talking', self.talking))
         dispatcher.add_handler(CommandHandler('reachOut', self.reachOut))
 
         updater.start_polling()
@@ -63,21 +72,30 @@ class VolunteerBot:
 
         return self.LOCATION
 
+    # Asking the users for their preferred location and returning data fitting the location and volunteer type.
     def location(self, update: Update, context: CallbackContext):
         self.userData['location'] = update.message.text.lower()
 
-        update.message.reply_text(
-            "Thanks for using the application here are your results!")
+        # Error handling in the event that the data is wrong
+        try:
+            data = self.data[self.userData['volType']
+                             ][self.userData['location']]
+            update.message.reply_text(
+                "Thanks for using the application here are your results!") and update.message.reply_text(f"{data}") and update.message.reply_text("Find more opportunities by /talking to")
+        except KeyError:
+            update.message.reply_text(
+                "The location or volunteer type you entered was wrong. Try /talking to me again!")
 
-        print(self.userData)
-        return self.DATA
+            return ConversationHandler.END
+        except:
+            update.message.reply_text(
+                "An error has occurred :(. Try /talking to me again!")
 
-    def data(self, update: Update, context: CallbackContext):
-        update.message.reply_text("Here is the data")
+            return ConversationHandler.END
 
         return ConversationHandler.END
 
     # For other orgs to talk to us.
     def reachOut(self, update: Update, context: CallbackContext):
         update.message.reply_text(
-            "This function is for other organizations to reach out to us.")
+            "Contact us at yylee.work@gmail.com, YZ's and Solaiy's email.")
