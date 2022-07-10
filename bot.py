@@ -66,7 +66,7 @@ class VolunteerBot:
     def volType(self, update: Update, context: CallbackContext):
         self.userData["volType"] = update.message.text.lower()
 
-        update.message.reply_text(
+        update.message.bot.send_photo(update.message.chat_id, open(r"C:\Users\yylee\Downloads\lifehack image.webp", 'rb')) and update.message.reply_text(
             "Where would you like to volunteer at?\nType:\n'n' for North\n'ne' for Northeast\n'c' for Central\n'e' for East\n'w' for West.")
 
         return self.LOCATION
@@ -80,7 +80,7 @@ class VolunteerBot:
             data = self.data[self.userData['volType']
                              ][self.userData['location']]
             update.message.reply_text(
-                "Thanks for using the application here are your results!") and update.message.reply_text(f"{data}") and update.message.reply_text("Find more opportunities by /talking to")
+                "Thanks for using the application here are your results!") and update.message.reply_text(f"{data}") and update.message.reply_text("Find more opportunities by /talking to me!")
         except KeyError:
             update.message.reply_text(
                 "The location or volunteer type you entered was wrong. Try /talking to me again!")
