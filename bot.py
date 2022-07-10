@@ -6,6 +6,8 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler, CallbackQueryHandler
 import logging
 import animalData
+import socialData
+import environmentData
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -16,8 +18,8 @@ class VolunteerBot:
         # Storing the data for easy access
         self.data = {
             "animals": animalData.animal_organisations,
-            "social": None,
-            "environment": None,
+            "social": socialData.social_organisations,
+            "environment": environmentData.environmental_organisations,
         }
 
         # Object to store data
@@ -68,7 +70,7 @@ class VolunteerBot:
         self.userData["volType"] = update.message.text.lower()
 
         update.message.reply_text(
-            "Where would you like to volunteer at?\nType:\n'n' for North\n'c' for Central\n'e' for East\n'w' for West.")
+            "Where would you like to volunteer at?\nType:\n'n' for North\n'ne' for Northeast\n'c' for Central\n'e' for East\n'w' for West.")
 
         return self.LOCATION
 
