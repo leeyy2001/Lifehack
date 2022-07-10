@@ -1,9 +1,6 @@
-from ast import Call
-from re import L
-from typing import final
 from telegram.ext import Updater
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
-from telegram.ext import CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler, CallbackQueryHandler
+from telegram import Update
+from telegram.ext import CallbackContext, CommandHandler, MessageHandler, Filters, ConversationHandler
 import logging
 import animalData
 import socialData
